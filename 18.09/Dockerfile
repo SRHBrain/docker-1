@@ -2,23 +2,8 @@ FROM debian:stable
 
 RUN apt-get update \
 && apt-get install -y \
-	bsdtar \
-	curl \
-	debootstrap \
-	dosfstools \
-	file \
 	git \
-	kmod \
-	libcap2-bin \
-	parted \
-	patch \
-	qemu-user-static \
-	quilt \
 	wget \
-	xxd \
-	xz-utils \
-	zerofree \
-	zip \
 && rm -rf /var/lib/apt/lists/*
 
 # set up nsswitch.conf for Go's "netgo" implementation (which Docker explicitly uses)
@@ -36,9 +21,13 @@ ENV DOCKER_VERSION 18.09.6
 RUN set -eux; \
 	\
 # this "case" statement is generated via "update.sh"
-	   apkArch="$(dpkg --print-architecture)"; \
+	apkArch="$(dpkg --print-architecture)"; \
 	case "$apkArch" in \
 		amd64) dockerArch='x86_64' ;; \
+		armhf) dockerArch='armel' ;; \
+		aarch64) dockerArch='aarch64' ;; \
+		ppc64le) dockerArch='ppc64le' ;; \
+		s390x) dockerArch='s390x' ;; \
 		*) echo >&2 "error: unsupported architecture ($apkArch)"; exit 1 ;;\
 	esac; \
 	\
