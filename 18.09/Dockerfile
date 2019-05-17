@@ -2,9 +2,23 @@ FROM debian:stable
 
 RUN apt-get update \
 && apt-get install -y \
+	bsdtar \
+	curl \
+	debootstrap \
+	dosfstools \
+	file \
 	git \
+	kmod \
+	libcap2-bin \
+	parted \
 	patch \
+	qemu-user-static \
+	quilt \
 	wget \
+	xxd \
+	xz-utils \
+	zerofree \
+	zip \
 && rm -rf /var/lib/apt/lists/*
 
 # set up nsswitch.conf for Go's "netgo" implementation (which Docker explicitly uses)
