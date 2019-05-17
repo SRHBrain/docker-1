@@ -1,13 +1,17 @@
-FROM alpine:3.9
+FROM debian:stable
 
-RUN apk add --no-cache \
-		ca-certificates
+RUN apt-get update \
+&& apt-get install -y \
+	git \
+	patch \
+	wget \
+&& rm -rf /var/lib/apt/lists/*
 
 # set up nsswitch.conf for Go's "netgo" implementation (which Docker explicitly uses)
 # - https://github.com/docker/docker-ce/blob/v17.09.0-ce/components/engine/hack/make.sh#L149
 # - https://github.com/golang/go/blob/go1.9.1/src/net/conf.go#L194-L275
 # - docker run --rm debian:stretch grep '^hosts:' /etc/nsswitch.conf
-RUN [ ! -e /etc/nsswitch.conf ] && echo 'hosts: files dns' > /etc/nsswitch.conf
+#RUN [ ! -e /etc/nsswitch.conf ] && echo 'hosts: files dns' > /etc/nsswitch.conf
 
 ENV DOCKER_CHANNEL stable
 ENV DOCKER_VERSION 18.09.6
@@ -18,13 +22,9 @@ ENV DOCKER_VERSION 18.09.6
 RUN set -eux; \
 	\
 # this "case" statement is generated via "update.sh"
-	apkArch="$(apk --print-arch)"; \
+	   apkArch="$(dpkg --print-architecture)"; \
 	case "$apkArch" in \
-		x86_64) dockerArch='x86_64' ;; \
-		armhf) dockerArch='armel' ;; \
-		aarch64) dockerArch='aarch64' ;; \
-		ppc64le) dockerArch='ppc64le' ;; \
-		s390x) dockerArch='s390x' ;; \
+		amd64) dockerArch='x86_64' ;; \
 		*) echo >&2 "error: unsupported architecture ($apkArch)"; exit 1 ;;\
 	esac; \
 	\
