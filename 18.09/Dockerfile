@@ -3,6 +3,8 @@ FROM debian:stable
 RUN apt-get update \
 && apt-get install -y \
 	git \
+	qemu-user-static \
+	sudo \
 	wget \
 && rm -rf /var/lib/apt/lists/*
 
